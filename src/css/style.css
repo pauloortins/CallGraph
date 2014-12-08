@@ -1,0 +1,23 @@
+body {
+  padding-top: 50px;
+}
+
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.code-element
+{
+    cursor: pointer;
+}
+
+.code-element-shown 
+{
+    opacity: 1;
+}
+
+.code-element-not-shown
+{
+    opacity: 0.3;
+}
