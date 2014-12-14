@@ -5,6 +5,7 @@ var IndexPage = function() {
     this.elements = ko.observableArray();
     this.searchTerm = ko.observable("");
     this.onlyVisible = ko.observable(false);
+    this.zoomLevel = ko.observable(8);
 
     retriever.getElements(function(data) {
 
@@ -66,20 +67,36 @@ var IndexPage = function() {
 
     this.toggleCodeElement = function(codeElement) 
     {
-        self.internalToggleCodeElement(codeElement);
+        self.setVisibility(codeElement, !codeElement.shown());
         refresh();
     };
 
-    this.internalToggleCodeElement = function(codeElement)
+    this.decreaseZoomLevel = function() {
+        
+        if (self.zoomLevel() > 3) {
+            self.zoomLevel(self.zoomLevel() - 1);
+            refresh();
+        }
+
+    };
+
+    this.increaseZoomLevel = function() {
+        if (self.zoomLevel() < 20) {
+            self.zoomLevel(self.zoomLevel() + 1);
+            refresh();
+        }
+    };
+
+    this.setVisibility = function(codeElement, state)
     {
-        codeElement.shown(!codeElement.shown());
+        codeElement.shown(state);
         
         var calledMethods = self.elements().filter(function(x) {
             return codeElement.calls.indexOf(x.id) != -1;
         });
         
         for (var i =0; i < calledMethods.length; i++) {
-            self.internalToggleCodeElement(calledMethods[i]);
+            self.setVisibility(calledMethods[i], state);
         }
 
     };

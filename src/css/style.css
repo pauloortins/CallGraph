@@ -27,3 +27,19 @@ body {
     margin: 0;
     width: 100%;
 }
+
+.elementList {
+    height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#graph {
+    height: 510px;
+}
+
+.zoomArea 
+{
+    display: inline;
+    float: right;
+}
