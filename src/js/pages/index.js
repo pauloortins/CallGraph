@@ -1,8 +1,37 @@
 var IndexPage = function() {
     var self = this;
-
-    this.elements = ko.observableArray(retriever.getElements().map(function(x) {return new codeElement(x.id, x.name, x.calls);}));
     
+    // Page Controls
+    this.elements = ko.observableArray();
+    this.searchTerm = ko.observable("");
+    this.onlyVisible = ko.observable(false);
+
+    retriever.getElements(function(data) {
+
+        var codeElements = data.map(function(x) {            
+            return new codeElement(
+                x.id, 
+                x.name, 
+                x.calls.map(function(y) {
+                    return y.value;
+                }))
+        });
+
+        self.elements(codeElements);        
+
+    });
+    
+    this.filteredElements = ko.computed(function() {
+
+        var searchTerm = self.searchTerm();
+        var onlyVisible = self.onlyVisible();
+
+        return self.elements().filter(function(x) {
+            return (searchTerm == '' || x.name.indexOf(searchTerm) != -1) &&
+                   (onlyVisible == false || x.shown() == true);
+        });
+    });
+
     this.shownElements = ko.computed(function() {        
         return self.elements().filter(function(x) {            
             return x.shown();
@@ -37,7 +66,21 @@ var IndexPage = function() {
 
     this.toggleCodeElement = function(codeElement) 
     {
-        codeElement.shown(!codeElement.shown());
+        self.internalToggleCodeElement(codeElement);
         refresh();
-    }
+    };
+
+    this.internalToggleCodeElement = function(codeElement)
+    {
+        codeElement.shown(!codeElement.shown());
+        
+        var calledMethods = self.elements().filter(function(x) {
+            return codeElement.calls.indexOf(x.id) != -1;
+        });
+        
+        for (var i =0; i < calledMethods.length; i++) {
+            self.internalToggleCodeElement(calledMethods[i]);
+        }
+
+    };
 };

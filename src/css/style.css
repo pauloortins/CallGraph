@@ -10,6 +10,7 @@ body {
 .code-element
 {
     cursor: pointer;
+    font-size: 9pt;
 }
 
 .code-element-shown 
@@ -20,4 +21,9 @@ body {
 .code-element-not-shown
 {
     opacity: 0.3;
+}
+
+.container {
+    margin: 0;
+    width: 100%;
 }
