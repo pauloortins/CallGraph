@@ -43,3 +43,17 @@ body {
     display: inline;
     float: right;
 }
+
+.concernColor {
+    min-width: 20px;
+    margin: 2px 0px;
+}
+
+.concernColorList {
+    padding: 0px 5px;
+    display: inline;
+}
+
+.selectableConcern {
+    cursor: pointer;
+}

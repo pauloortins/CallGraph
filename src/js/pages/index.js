@@ -3,9 +3,11 @@ var IndexPage = function() {
     
     // Page Controls
     this.elements = ko.observableArray();
+    this.concerns = ko.observableArray();
     this.searchTerm = ko.observable("");
     this.onlyVisible = ko.observable(false);
     this.zoomLevel = ko.observable(8);
+    this.selectedCodeElement = ko.observable(new codeElement(0, '', []));
 
     retriever.getElements(function(data) {
 
@@ -20,6 +22,14 @@ var IndexPage = function() {
 
         self.elements(codeElements);        
 
+    });
+
+    retriever.getConcerns(function(data) {
+       var concerns = data.map(function(x) {
+           return new concern(x.id, x.name, x.color);
+       }); 
+
+       self.concerns(concerns);
     });
     
     this.filteredElements = ko.computed(function() {
@@ -69,6 +79,19 @@ var IndexPage = function() {
     {
         self.setVisibility(codeElement, !codeElement.shown());
         refresh();
+    }; 
+
+    this.setVisibility = function(codeElement, state)
+    {
+        codeElement.shown(state);
+        
+        var calledMethods = self.elements().filter(function(x) {
+            return codeElement.calls.indexOf(x.id) != -1;
+        });
+        
+        for (var i =0; i < calledMethods.length; i++) {
+            self.setVisibility(calledMethods[i], state);
+        }
     };
 
     this.decreaseZoomLevel = function() {
@@ -87,17 +110,13 @@ var IndexPage = function() {
         }
     };
 
-    this.setVisibility = function(codeElement, state)
+    this.setSelectedCodeElement = function(id) 
     {
-        codeElement.shown(state);
-        
-        var calledMethods = self.elements().filter(function(x) {
-            return codeElement.calls.indexOf(x.id) != -1;
-        });
-        
-        for (var i =0; i < calledMethods.length; i++) {
-            self.setVisibility(calledMethods[i], state);
-        }
-
+        self.selectedCodeElement(self.elements().filter(function (x) {return x.id == id})[0]);
     };
+
+    this.toggleConcern = function(concern) 
+    {
+        self.selectedCodeElement().toggleConcern(concern);
+    }
 };

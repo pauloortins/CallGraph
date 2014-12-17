@@ -62,7 +62,11 @@
                     <hr/>
                     <div class="row elementList">
                     <!-- ko foreach: filteredElements -->
-                    <div class="col-md-12 code-element" data-bind="css: { 'code-element-shown': shown() === true, 'code-element-not-shown': shown() === false}, click: $parent.toggleCodeElement, text: name">
+                    <div class="col-md-12 code-element" data-bind="css: { 'code-element-shown': shown() === true, 'code-element-not-shown': shown() === false}, click: $parent.toggleCodeElement">
+                        <span data-bind="text: name"></span>
+                        <!-- ko foreach: concerns -->
+                        <div class="concernColorList" data-bind="style: { backgroundColor: color }, attr: {title: name}">&nbsp;</div>    
+                        <!-- /ko -->
                     </div>                    
                     <!-- /ko -->
                     </div>
@@ -85,8 +89,37 @@
           </div>
       </div>
 
+      <div class="row" data-bind="foreach: concerns">
+          <div class="col-md-2">
+              <div class="concernColor col-md-1" data-bind="style: { backgroundColor: color }">&nbsp;</div>
+              &nbsp;
+              <span data-bind="text: name"></span>
+          </div>
+      </div>
     </div><!-- /.container -->
 
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Choose the concerns</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row selectableConcern" data-bind="foreach: concerns">
+                        <div class="col-md-10" data-bind="click: $parent.toggleConcern, css: {'code-element-not-shown': $parent.selectedCodeElement().concerns().filter(function(x) {return x.id == id;}).length == 0 }">
+                            <div class="concernColor col-md-1" data-bind="style: { backgroundColor: color }">&nbsp;</div>
+                            &nbsp;
+                        <span data-bind="text: name"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -96,6 +129,7 @@
     <script src="bower_components/knockout/dist/knockout.js"></script>
     <script src="bower_components/d3/d3.js"></script>
     <script src="src/js/models/codeElement.js"></script>
+    <script src="src/js/models/concern.js"></script>
     <script src="src/js/retrievers/retriever.js"></script>
     <script src="src/js/retrievers/source.js"></script>
     <script src="src/js/pages/index.js"></script>
@@ -194,6 +228,10 @@
                 })
                 .on("mouseout", function() {
                     this.style.fill = color(1);
+                })
+                .on("dblclick", function(x) {
+                    indexPage.setSelectedCodeElement(x.id);
+                    $('#myModal').modal();
                 })
                 .call(force.drag);
             
